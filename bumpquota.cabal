@@ -1,7 +1,6 @@
 name:                bumpquota
 version:             0.1.0.0
 synopsis:            Bump quotas for everyone
--- description:
 license:             GPL-3
 license-file:        LICENSE
 author:              Maximilian Marx
@@ -9,12 +8,11 @@ maintainer:          mmarx@wh2.tu-dresden.de
 copyright:           2014 Maximilian Marx
 category:            System
 build-type:          Simple
--- extra-source-files:
 cabal-version:       >=1.10
 
 executable bumpquota
   main-is:             Main.hs
-  -- other-modules:
+  ghc-options:         -Wall -Werror -O2 -fno-warn-unused-binds
   other-extensions:    OverloadedStrings
   build-depends:       base >=4.5 && <4.7
                      , attoparsec >= 0.10 && <0.11

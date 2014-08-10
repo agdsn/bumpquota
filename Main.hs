@@ -4,11 +4,8 @@ import Prelude hiding (unlines)
 import Control.Applicative ( (<$>)
                            , (<*>)
                            , (<|>)
-                           , (*>)
                            , (<*)
                            )
-import Control.Monad (when)
-import Control.Arrow ((&&&))
 import Data.Attoparsec.Text
 import Data.Char (isSpace)
 import Data.Default ( Default (..)
@@ -79,16 +76,11 @@ parseQuota = do
   skipSpace
   _ <- count 2 $ char '-' <|> char '+'
   skipSpace
-  quota <- Quota <$> num <*> num <*> (num <* num) <*> num <*> num <*> (num <* decimal)
+  quota <- Quota <$> num <*> num <*> (num <* num) <*> num <*> num <*> (num <* (decimal :: Parser Integer))
   _ <- endOfLine <|> endOfInput
   return (login, quota)
   where num = decimal <* skipSpace
 
-bumpQuota :: Quota -> Quota
-bumpQuota = bumpQuota' def
-
-bumpQuota' :: QuotaConfig -> Quota -> Quota
-bumpQuota' cfg quota = quota
 
 handleQuota :: Login -> Quota -> IO ()
 handleQuota = handleQuota' def
@@ -111,9 +103,10 @@ formatQuota login quota = unwords [ unpack login
 
 main :: IO ()
 main = do
-  repQuota <- readProcess "repquota" ["-p", filesystem def] ""
+  let cfg = def
+  repQuota <- readProcess "repquota" ["-p", filesystem cfg] ""
   let lquota = filter (/="") . drop 5 . map (strip . pack) . lines $ repQuota
   let eQ = parseOnly (many1 parseQuota) $ unlines lquota
   case eQ of
     Left e -> putStrLn $ "Parse error: `" <> e <> "'"
-    Right quotas -> mapM_ (uncurry handleQuota) quotas
+    Right quotas -> mapM_ (uncurry $ handleQuota' cfg) quotas
