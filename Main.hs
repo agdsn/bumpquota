@@ -35,6 +35,7 @@ import System.Process (readProcess)
 
 import Options.Applicative ( Parser ()
                            , ParserInfo ()
+                           , auto
                            , execParser
                            , fullDesc
                            , header
@@ -58,16 +59,16 @@ data QuotaConfig = QuotaConfig { blockSoftCfg :: Maybe Integer
 
 config' :: Parser QuotaConfig
 config' = QuotaConfig
-          <$> optional (option $ long "block-soft"
+          <$> optional (option auto $ long "block-soft"
                         <> metavar "BLOCKSOFT"
                         <> help "Block soft limit")
-          <*> optional (option $ long "block-hard"
+          <*> optional (option auto $ long "block-hard"
                         <> metavar "BLOCKHARD"
                         <> help "Block hard limit")
-          <*> optional (option $ long "inode-soft"
+          <*> optional (option auto $ long "inode-soft"
                         <> metavar "INODESOFT"
                         <> help "Inode soft limit")
-          <*> optional (option $ long "inode-hard"
+          <*> optional (option auto $ long "inode-hard"
                         <> metavar "INODEHARD"
                         <> help "Inode hard limit")
           <*> strOption (long "filesystem"
